@@ -2,14 +2,16 @@
 
 // ==================== GLOBALS ====================
 
-HMODULE win32_main_module_handle = 0;
+// MainProc info:
+global HMODULE win32_main_module_handle = 0;
 
-// string handling:
-U8     win32_filepath_directory_separator = '\\';
-U8     win32_main_module_filepath[255] = {0};
-U16    win32_main_module_filepath_len = 0;
+// Filepaths:
+global U8     win32_filepath_directory_separator = '\\';
+global U8     win32_main_module_filepath[255] = {0};
+global U16    win32_main_module_filepath_len = 0;
 
-Win32MainTickHook win32_main_tick_hooks_head = {0};
+// MainTick list:
+global Win32MainTickHook win32_main_tick_hooks_head = {0};
 
 
 
@@ -295,20 +297,20 @@ OSFile_size(OSFile *os_file, U64 size)
     LONG  offs_lo = offset[0];
     PLONG offs_hi = &offset[1];
 
-    if (SetFilePointer(file_handle, offs_lo, (PLONG)&offs_hi, FILE_BEGIN) != 0)
+    if (SetFilePointer(file_handle, offs_lo, (PLONG)&offs_hi, FILE_BEGIN) == INVALID_SET_FILE_POINTER)
     {
-      if (SetEndOfFile(file_handle) != 0)
-      {
-        result = size;
-      }
-      else
-      {
         // TODO : @LOG
-      }
     }
     else
     {
-      // TODO : @LOG
+      if (SetEndOfFile(file_handle) == 0)
+      {
+        // TODO : @LOG
+      }
+      else
+      {
+        result = size;
+      }
     }
   }
 
@@ -324,32 +326,33 @@ OSFile_read(OSFile *os_file, void *dst, Umm offs, Umm size)
   Umm result = -1;
   HANDLE file_handle = (HANDLE)os_file;
 
-  if (size > 0)
+  if (size <= 0)
+  {
+    result = 0;
+  }
+  else
   {
     LONG* offset = (LONG*)&offs;
     LONG  offs_lo = offset[0];
     PLONG offs_hi = &offset[1];
+    if (offs_hi == 0) { offs_hi = NULL; }
 
-    if (SetFilePointer(file_handle, offs_lo, (PLONG)&offs_hi, FILE_BEGIN) != 0)
+    if (SetFilePointer(file_handle, offs_lo, (PLONG)offs_hi, FILE_BEGIN) == INVALID_SET_FILE_POINTER)
     {
-      DWORD bytes_read = 0;
-      if (ReadFile(file_handle, dst, (DWORD)size, &bytes_read, NULL) != 0)
-      {
-        result = (Umm)bytes_read;
-      }
-      else
-      {
-        // TODO : @LOG
-      }
+      // TODO : @LOG
     }
     else
     {
-      // TODO: @LOG
+      DWORD bytes_read = 0;
+      if (ReadFile(file_handle, dst, (DWORD)size, &bytes_read, NULL) == 0)
+      {
+        // TODO : @LOG
+      }
+      else
+      {
+        result = (Umm)bytes_read;
+      }
     }
-  } // ! size > 0
-  else
-  {
-    result = 0;
   }
 
   return(result);
@@ -364,33 +367,33 @@ OSFile_write(OSFile *os_file, void *src, Umm offs, Umm size)
   Umm result = -1;
   HANDLE file_handle = (HANDLE)os_file;
 
-  if (size > 0)
+  if (size <= 0)
+  {
+    result = 0;
+  }
+  else
   {
     LONG* offset = (LONG*)&offs;
     LONG  offs_lo = offset[0];
     PLONG offs_hi = &offset[1];
 
-    if (SetFilePointer(file_handle, offs_lo, (PLONG)&offs_hi, FILE_BEGIN) != 0)
+    if (SetFilePointer(file_handle, offs_lo, (PLONG)&offs_hi, FILE_BEGIN) == INVALID_SET_FILE_POINTER)
+    {
+      // TODO: @LOG
+    }
+    else
     {
       DWORD bytes_read = 0;
-      if (WriteFile(file_handle, (LPCVOID)src, (DWORD)size, &bytes_read, NULL) != 0)
+      if (WriteFile(file_handle, (LPCVOID)src, (DWORD)size, &bytes_read, NULL) == 0)
+      {
+        // TODO: @LOG
+      }
+      else
       {
         // NULL = [in, out, optional] lpOverlapped (async)
         result = (Umm)bytes_read;
       }
-      else
-      {
-        // TODO: @LOG
-      }
     }
-    else
-    {
-      // TODO: @LOG
-    }
-  } // ! size > 0
-  else
-  {
-    result = 0;
   }
 
   return(result);

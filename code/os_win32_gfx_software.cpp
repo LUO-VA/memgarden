@@ -1,13 +1,18 @@
 //#include "os_win32_gfx_software.h"
 
 
+// ==================== GLOBALS ====================
+
+// Manager:
+global GfxBackend gfx_swg_backend = {0};
+
+// Per-window associated data:
+global SwgWindow  swg_window_roster[OS_WINDOW_COUNT] = {0};
+global SwgWindow *swg_window_free = 0;
+
+
+
 // ==================== os_win32/gfx - Backend Management ====================
-
-GfxBackend gfx_swg_backend = {0};
-
-SwgWindow swg_window_roster[OS_WINDOW_COUNT] = {0};
-SwgWindow *swg_window_free = 0;
-
 
 c_linkage OSGraphicsBackend *
 Swg_init(OSGraphicsBackend *swg_backend_mem, OSGraphicsSentinel *os_gfx_sentinel)

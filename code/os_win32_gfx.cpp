@@ -18,22 +18,22 @@
 
 // ==================== GLOBALS ====================
 
-ATOM ms_general_window_class_atom;
+// Generic window type:
+global ATOM ms_general_window_class_atom;
 
-// User Callback:
-OSGraphicsCallback *gfx_user_callback = 0;
-
-// Initial Callback:
-OSGraphicsCallback gfx_user_callback_dummy = {0};
+// User Callback (initial dummy provided):
+global OSGraphicsCallback *gfx_user_callback = 0;
+global OSGraphicsCallback gfx_user_callback_dummy = {0};
 internal void OSWindow_kill_callback_stub(OSWindow *os_window, void *user_callback_data, void *user_window_data) { }
 
 // OSGraphicsSentinel:
-GfxWindow gfx_window_roster[OS_WINDOW_COUNT] = {0};
-GfxWindow *gfx_window_head = 0;
-GfxWindow *gfx_window_free = 0;
+global GfxWindow gfx_window_roster[OS_WINDOW_COUNT] = {0};
+global GfxWindow *gfx_window_head = 0;
+global GfxWindow *gfx_window_free = 0;
 
+// OSMainTick entry:
 // MS window message handler.
-Win32MainTickHook gfx_sentinel_main_tick_hook = {0};
+global Win32MainTickHook gfx_sentinel_main_tick_hook = {0};
 
 
 
